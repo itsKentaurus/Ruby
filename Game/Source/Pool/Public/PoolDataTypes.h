@@ -29,23 +29,10 @@ public:
 };
 
 USTRUCT()
-struct FPoolData : public FTableRowBase
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<AActor> RootActor = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	int32 MaxPoolSize = 5;
-};
-
-USTRUCT()
 struct FActorPool
 {
 	GENERATED_BODY()
 
-public:
 	UPROPERTY(Transient)
 	TArray<TObjectPtr<AActor>>PooledActors;
 
