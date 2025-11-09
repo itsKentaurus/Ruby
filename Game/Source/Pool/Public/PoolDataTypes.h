@@ -39,11 +39,11 @@ struct FActorPool
 	UPROPERTY(Transient)
 	TObjectPtr<UPoolActorData> PoolData = nullptr;
 
-	int32 ActorsGenerated = 0;
+	int32 ActorCount = 0;
 
 	void Return(AActor* Actor)
 	{
-		ActorsGenerated -= 1;
+		ActorCount -= 1;
 		if (PooledActors.Num() < PoolData->MaxPoolSize)
 		{
 			Actor->SetActorLocation(FVector(10000.f, 10000.f, 10000.f), false, nullptr, ETeleportType::ResetPhysics);

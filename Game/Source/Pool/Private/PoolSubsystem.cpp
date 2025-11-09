@@ -79,7 +79,7 @@ void UPoolSubsystem::OnActorLoaded(FActorPool* Pool, const FActorInitializationP
 	if (ensureAlways(Actor->Implements<UPoolActorInterface>()))
 	{
 		IPoolActorInterface* PoolActorInterface = CastChecked<IPoolActorInterface>(Actor);
-		Pool->ActorsGenerated += 1;
+		Pool->ActorCount += 1;
 		PoolActorInterface->ActorPool = MakeShared<FActorPool>(*Pool);
 		PoolActorInterface->Activate();
 	}
