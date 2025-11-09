@@ -17,18 +17,17 @@ void UPoolSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void UPoolSubsystem::SpawnActor(const FName& Name, const FActorInitializationParams& Params)
 {
-	FActorPool* Pool = ActorPoolMap.Find(Name);
-	if (!Pool)
+	if (FActorPool* Pool = ActorPoolMap.Find(Name); Pool)
+	{
+		OnActorLoaded(Pool, Params);
+	}
+	else
 	{
 		auto* SoftPtr = PoolSettings->NameToPoolData.Find(Name);
 		
 		FStreamableManager& StreamableManager = UAssetManager::GetStreamableManager();
 		auto Delegate = FStreamableDelegate::CreateUObject(this, &UPoolSubsystem::OnDataLoaded, Name, Params);
 		StreamableManager.RequestAsyncLoad(SoftPtr->ToSoftObjectPath(), Delegate);
-	}
-	else
-	{
-		OnActorLoaded(Pool, Params);
 	}
 }
 
