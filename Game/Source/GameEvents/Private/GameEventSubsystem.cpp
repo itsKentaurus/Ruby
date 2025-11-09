@@ -25,7 +25,7 @@ void UGameEventSubsystem::OnEventTriggered(const FGameEventData& EventData)
 
 	for (const TPair<FGameplayTag, double>& Tuple : EventData.Parameters) 
 	{
-		UE_LOG(LogGameEvent, Verbose, TEXT("TagParameter(%s): %f"), *Tuple.Key.ToString(), Tuple.Value);	
+		UE_LOG(LogGameEvent, Verbose, TEXT("Parameter(%s): %f"), *Tuple.Key.ToString(), Tuple.Value);	
 	}
 	
 	OnTriggerEvents.ExecuteIfBound(EventData);
