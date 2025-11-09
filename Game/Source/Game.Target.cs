@@ -16,6 +16,6 @@ public class GameTarget : TargetRules
 
 	private void RegisterModulesCreatedByRider()
 	{
-		ExtraModuleNames.AddRange(new string[] { "GameEvents", "HSM", "Cycle" });
+		ExtraModuleNames.AddRange(new string[] { "GameEvents", "HSM", "Cycle", "Pool" });
 	}
 }
