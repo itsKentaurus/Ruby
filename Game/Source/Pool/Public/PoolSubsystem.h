@@ -10,6 +10,8 @@
 struct FActorInitializationParams;
 class UPoolSettings;
 
+DECLARE_LOG_CATEGORY_EXTERN(LogPoolSubsystem, Log, All);
+
 /**
  * 
  */

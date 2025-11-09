@@ -1,6 +1,5 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PoolSubsystem.h"
 
 #include "GameplayTagContainer.h"
@@ -8,6 +7,9 @@
 #include "PoolDataTypes.h"
 #include "PoolSettings.h"
 #include "Engine/AssetManager.h"
+
+DEFINE_LOG_CATEGORY(LogPoolSubsystem);
+
 
 void UPoolSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -22,21 +24,28 @@ void UPoolSubsystem::SpawnActor(const FGameplayTag& Tag, const FActorInitializat
 	{
 		OnActorLoaded(Pool, Params);
 	}
-	else
+	else if (const TSoftObjectPtr<UPoolActorData>* SoftPtr = PoolSettings->NameToPoolData.Find(Tag); SoftPtr)
 	{
-		auto* SoftPtr = PoolSettings->NameToPoolData.Find(Tag);
-		
 		FStreamableManager& StreamableManager = UAssetManager::GetStreamableManager();
 		auto Delegate = FStreamableDelegate::CreateUObject(this, &UPoolSubsystem::OnDataLoaded, Tag, Params);
 		StreamableManager.RequestAsyncLoad(SoftPtr->ToSoftObjectPath(), Delegate);
+	}
+	else
+	{
+		UE_LOG(LogPoolSubsystem, Error, TEXT("Failed to spawn actor %s"), *Tag.ToString());
 	}
 }
 
 void UPoolSubsystem::ReturnActor(AActor* Actor)
 {
+	if (!ensureAlways(IsValid(Actor)))
+	{
+		return;
+	}
+	
 	if (Actor->Implements<UPoolActorInterface>())
 	{
-		auto* PoolActorInterface = CastChecked<IPoolActorInterface>(Actor);
+		IPoolActorInterface* PoolActorInterface = CastChecked<IPoolActorInterface>(Actor);
 		PoolActorInterface->Deactivate();
 		PoolActorInterface->ActorPool->Return(Actor);
 	}
@@ -48,10 +57,15 @@ void UPoolSubsystem::ReturnActor(AActor* Actor)
 
 void UPoolSubsystem::OnActorLoaded(FActorPool* Pool, const FActorInitializationParams& Params) const
 {
+	if (!ensureAlways(Pool))
+	{
+		return;
+	}
+	
 	if (Pool->PooledActors.IsEmpty())
 	{
 		FActorSpawnParameters SpawnParams;
-		auto* SpawnedActor = GetWorld()->SpawnActor(Pool->PoolData->RootActor);
+		AActor* SpawnedActor = GetWorld()->SpawnActor(Pool->PoolData->RootActor);
 		Pool->PooledActors.Add(SpawnedActor);
 	}
 
@@ -62,9 +76,10 @@ void UPoolSubsystem::OnActorLoaded(FActorPool* Pool, const FActorInitializationP
 	Params.InitializeActor.ExecuteIfBound(Actor);
 	Params.PlaceActor.ExecuteIfBound(Actor);
 
-	if (Actor->Implements<UPoolActorInterface>())
+	if (ensureAlways(Actor->Implements<UPoolActorInterface>()))
 	{
-		auto* PoolActorInterface = CastChecked<IPoolActorInterface>(Actor);
+		IPoolActorInterface* PoolActorInterface = CastChecked<IPoolActorInterface>(Actor);
+		Pool->ActorsGenerated += 1;
 		PoolActorInterface->ActorPool = MakeShared<FActorPool>(*Pool);
 		PoolActorInterface->Activate();
 	}
@@ -72,10 +87,10 @@ void UPoolSubsystem::OnActorLoaded(FActorPool* Pool, const FActorInitializationP
 
 void UPoolSubsystem::OnDataLoaded(const FGameplayTag Tag, FActorInitializationParams Params)
 {
-	auto* SoftPtr = PoolSettings->NameToPoolData.Find(Tag);
+	const TSoftObjectPtr<UPoolActorData>* SoftPtr = PoolSettings->NameToPoolData.Find(Tag);
 	
 	FActorPool NewPool;
 	NewPool.PoolData = SoftPtr->Get();
-	auto& Pool = ActorPoolMap.Add(Tag, NewPool);
+	FActorPool& Pool = ActorPoolMap.Add(Tag, NewPool);
 	OnActorLoaded(&Pool, Params);
 }
