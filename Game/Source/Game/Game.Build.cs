@@ -9,7 +9,9 @@ public class Game : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PrivateDependencyModuleNames.AddRange([
-			"Cycle"
+			"Cycle",
+			"GameEvents",
+			"GameplayTags",
 		]);
 		
 		PublicDependencyModuleNames.AddRange([

@@ -4,6 +4,7 @@
 #include "GameState/PlayingGameState.h"
 
 #include "CycleComponent.h"
+#include "Utils/EventConverter.h"
 
 APlayingGameState::APlayingGameState()
 {
@@ -23,4 +24,6 @@ void APlayingGameState::BeginPlay()
 void APlayingGameState::OnCycleUpdated(const FCycleDefinition& CycleDefinition)
 {
 	UE_LOG(LogTemp, Log, TEXT("%s"), *CycleDefinition.ToString());
+
+	UEventConverter::TriggerCycleEvent(this, CycleDefinition);
 }

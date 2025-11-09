@@ -8,6 +8,8 @@
 
 struct FGameEventData;
 
+DECLARE_LOG_CATEGORY_EXTERN(LogGameEvent, Log, All);
+
 DECLARE_DELEGATE_OneParam(FOnTriggerEvents, const FGameEventData& Data);
 
 /**

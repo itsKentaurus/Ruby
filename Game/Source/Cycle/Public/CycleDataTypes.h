@@ -1,19 +1,49 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+
 #include "GameplayTagContainer.h"
+#include "NativeGameplayTags.h"
 
 #include "CycleDataTypes.generated.h"
 
-UENUM(BlueprintType)
-enum class ECycleSegmentType : uint8
-{
-	Day,
-	Night
-};
+CYCLE_API
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cycle_Event_Start);
+
+CYCLE_API
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cycle_Event_Stop);
+
+CYCLE_API
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cycle_Event_Reset);
+
+CYCLE_API
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cycle_Event_SetNextSegment);
+
+CYCLE_API
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cycle_Event_Multiplier);
+
+
+CYCLE_API
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cycle_State_Running);
+
+CYCLE_API
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cycle_State_Completed);
+
+
+CYCLE_API
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cycle_Parameter_CycleIndex);
+
+CYCLE_API
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cycle_Parameter_StartTime);
+
+CYCLE_API
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cycle_Parameter_CurrentTime);
+
+CYCLE_API
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cycle_Parameter_Multiplier);
 
 USTRUCT(BlueprintType)
-struct FCycleDefinition
+struct CYCLE_API FCycleDefinition
 {
 	GENERATED_BODY()
 
@@ -21,11 +51,22 @@ struct FCycleDefinition
 	float StartTime = -1.f;
 	float CurrentTime = 0.f;
 	float Multiplier = 1.f;
-	bool bIsRunning = false;
-	bool bIsComplete = false;
+
+	FGameplayTag Event;
+	FGameplayTagContainer EventTags;
+
+	bool IsRunning() const
+	{
+		return EventTags.HasTagExact(TAG_Cycle_State_Running);
+	}
+
+	bool IsCompleted() const
+	{
+		return EventTags.HasTagExact(TAG_Cycle_State_Completed);
+	}
 
 	FString ToString() const
 	{
-		return FString::Printf(TEXT("CycleDefinition: %d, %f, %f, %f, %d, %d"), CycleIndex, StartTime, CurrentTime, Multiplier, bIsRunning, bIsComplete);
+		return FString::Printf(TEXT("CycleDefinition: %d, %f, %f, %f"), CycleIndex, StartTime, CurrentTime, Multiplier);
 	}
 };

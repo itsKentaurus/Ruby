@@ -23,5 +23,22 @@ struct FGameEventData
 	// These are all items that have been used for this event
 	// E.g., Difficulty, Characters, Weapons, Triggers, Etc...
 	UPROPERTY(EditAnywhere)
-	FGameplayTagContainer Parameters;
+	FGameplayTagContainer TagParameters;
+	
+	UPROPERTY(EditAnywhere)
+	TMap<FGameplayTag, double> Parameters;
+	
+	template<typename ValueType>
+	ValueType GetValue(const FGameplayTag& Tag, ValueType DefaultValue);
 };
+
+template <typename ValueType>
+ValueType FGameEventData::GetValue(const FGameplayTag& Tag, ValueType DefaultValue)
+{
+	if (!Parameters.Contains(Tag))
+	{
+		return DefaultValue;
+	}
+	
+	return static_cast<ValueType>(Parameters[Tag]);
+}

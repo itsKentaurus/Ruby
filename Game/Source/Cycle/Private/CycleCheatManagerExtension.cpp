@@ -71,17 +71,22 @@ void UCycleCheatManagerExtension::Cheat_SetNextCycle() const
 
 UCycleComponent* UCycleCheatManagerExtension::GetCycleComponent() const
 {
-	auto* GameState = GetWorld()->GetGameState();
-	auto* CycleComponent = Cast<UCycleComponent>(GameState->GetComponentByClass(UCycleComponent::StaticClass()));
-	if (IsValid(CycleComponent))
+	if (const auto* GameState = GetWorld()->GetGameState(); IsValid(GameState))
 	{
-		return CycleComponent;
+		auto* CycleComponent = Cast<UCycleComponent>(GameState->GetComponentByClass(UCycleComponent::StaticClass()));
+		if (IsValid(CycleComponent))
+		{
+			return CycleComponent;
+		}
 	}
 
-	CycleComponent = Cast<UCycleComponent>(GetWorld()->GetAuthGameMode());
-	if (IsValid(CycleComponent))
+	if (const auto* GameMode = GetWorld()->GetAuthGameMode(); IsValid(GameMode))
 	{
-		return CycleComponent;
+		auto* CycleComponent = Cast<UCycleComponent>(GameMode->GetComponentByClass(UCycleComponent::StaticClass()));
+		if (IsValid(CycleComponent))
+		{
+			return CycleComponent;
+		}
 	}
 
 	return nullptr;
