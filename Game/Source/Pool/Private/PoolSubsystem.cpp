@@ -3,6 +3,7 @@
 
 #include "PoolSubsystem.h"
 
+#include "GameplayTagContainer.h"
 #include "PoolActorInterface.h"
 #include "PoolDataTypes.h"
 #include "PoolSettings.h"
@@ -15,18 +16,18 @@ void UPoolSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	PoolSettings = GetDefault<UPoolSettings>();
 }
 
-void UPoolSubsystem::SpawnActor(const FName& Name, const FActorInitializationParams& Params)
+void UPoolSubsystem::SpawnActor(const FGameplayTag& Tag, const FActorInitializationParams& Params)
 {
-	if (FActorPool* Pool = ActorPoolMap.Find(Name); Pool)
+	if (FActorPool* Pool = ActorPoolMap.Find(Tag); Pool)
 	{
 		OnActorLoaded(Pool, Params);
 	}
 	else
 	{
-		auto* SoftPtr = PoolSettings->NameToPoolData.Find(Name);
+		auto* SoftPtr = PoolSettings->NameToPoolData.Find(Tag);
 		
 		FStreamableManager& StreamableManager = UAssetManager::GetStreamableManager();
-		auto Delegate = FStreamableDelegate::CreateUObject(this, &UPoolSubsystem::OnDataLoaded, Name, Params);
+		auto Delegate = FStreamableDelegate::CreateUObject(this, &UPoolSubsystem::OnDataLoaded, Tag, Params);
 		StreamableManager.RequestAsyncLoad(SoftPtr->ToSoftObjectPath(), Delegate);
 	}
 }
@@ -69,12 +70,12 @@ void UPoolSubsystem::OnActorLoaded(FActorPool* Pool, const FActorInitializationP
 	}
 }
 
-void UPoolSubsystem::OnDataLoaded(const FName PoolName, FActorInitializationParams Params)
+void UPoolSubsystem::OnDataLoaded(const FGameplayTag Tag, FActorInitializationParams Params)
 {
-	auto* SoftPtr = PoolSettings->NameToPoolData.Find(PoolName);
+	auto* SoftPtr = PoolSettings->NameToPoolData.Find(Tag);
 	
 	FActorPool NewPool;
 	NewPool.PoolData = SoftPtr->Get();
-	auto& Pool = ActorPoolMap.Add(PoolName, NewPool);
+	auto& Pool = ActorPoolMap.Add(Tag, NewPool);
 	OnActorLoaded(&Pool, Params);
 }

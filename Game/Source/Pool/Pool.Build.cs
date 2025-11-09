@@ -20,7 +20,8 @@ public class Pool : ModuleRules
                 "Engine",
                 "Slate",
                 "SlateCore",
-                "DeveloperSettings"
+                "DeveloperSettings",
+                "GameplayTags"
             }
         );
     }

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "TestPoolSpawner.generated.h"
 
@@ -12,6 +13,9 @@ class POOL_API ATestPoolSpawner : public AActor
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(EditAnywhere)
+	FGameplayTag ActorTagToSpawn;
+	
 	UPROPERTY(EditAnywhere)
 	TArray<AActor*> SpawnLocations;
 	

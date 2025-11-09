@@ -36,5 +36,5 @@ void ATestPoolSpawner::TimerCompleted()
 		Params.InitializeActor.BindUObject(this, &ATestPoolSpawner::InitializeActor);
 		Params.PlaceActor.BindUObject(this, &ATestPoolSpawner::PlaceActor, i);
 	
-		PoolSubsystem->SpawnActor(FName("TestActor"), Params);
+		PoolSubsystem->SpawnActor(ActorTagToSpawn, Params);
 	}}

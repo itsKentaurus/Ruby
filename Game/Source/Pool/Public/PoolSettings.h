@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Engine/DeveloperSettings.h"
 #include "PoolSettings.generated.h"
 
 class UPoolActorData;
+
 /**
  * 
  */
@@ -16,6 +17,6 @@ class POOL_API UPoolSettings : public UDeveloperSettings
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, Config)
-	TMap<FName, TSoftObjectPtr<UPoolActorData>> NameToPoolData;
+	UPROPERTY(EditAnywhere, Config, meta=(Categories="Pool.Actor"))
+	TMap<FGameplayTag, TSoftObjectPtr<UPoolActorData>> NameToPoolData;
 };

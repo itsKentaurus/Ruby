@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "GameplayTagContainer.h"
 #include "PoolDataTypes.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "PoolSubsystem.generated.h"
@@ -20,7 +21,7 @@ class POOL_API UPoolSubsystem : public UWorldSubsystem
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	
-	void SpawnActor(const FName& Name, const FActorInitializationParams& Params);
+	void SpawnActor(const FGameplayTag& Tag, const FActorInitializationParams& Params);
 	static void ReturnActor(AActor* Actor);
 
 private:
@@ -28,10 +29,10 @@ private:
 	TObjectPtr<const UPoolSettings> PoolSettings = nullptr;
 
 	UPROPERTY(Transient)
-	TMap<FName, FActorPool> ActorPoolMap;
+	TMap<FGameplayTag, FActorPool> ActorPoolMap;
 
-	TMap<FName, int32> ActorsToSpawn;
+	TMap<FGameplayTag, int32> ActorsToSpawn;
 
 	void OnActorLoaded(FActorPool* Pool, const FActorInitializationParams& Params) const;
-	void OnDataLoaded(const FName PoolName, FActorInitializationParams Params);
+	void OnDataLoaded(const FGameplayTag Tag, FActorInitializationParams Params);
 };
